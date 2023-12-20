@@ -12,8 +12,46 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                <h3 class="text-dark mb-0">Chambres</h3>
+            <h3 class="text-dark mb-4">Team</h3>
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Employee Info</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                        <table class="table my-0" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>Nom - Prenom</th>
+                                <th>Nom d'utilisateur</th>
+                                <th>Téléphone</th>
+                                <th>Mail</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Airi Satou</td>
+                                <td>Accountant</td>
+                                <td>Tokyo</td>
+                                <td>33</td>
+                                <td>
+                                    <button class="btn btn-warning" type="button">Editer</button>
+                                    <button class="btn btn-danger" type="button">Supprimer</button>
+                                </td>
+                            </tr>
+                            <tfoot>
+                            <tr>
+                                <td><strong>Nom - Prenom</strong></td>
+                                <td><strong>Nom d'utilisateur</strong></td>
+                                <td><strong>Téléphone</strong></td>
+                                <td><strong>Mail</strong></td>
+                                <td>Action</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

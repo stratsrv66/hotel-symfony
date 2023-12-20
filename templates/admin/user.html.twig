@@ -12,9 +12,121 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                <h3 class="text-dark mb-0">Utilisateurs</h3>
+            <h3 class="text-dark mb-4">Utilisateurs</h3>
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Liste des utilisateurs</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                        <table class="table my-0" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nom d'utilisateur</th>
+                                <th>Téléphone</th>
+                                <th>Mail</th>
+                                <th>Editer</th>
+                                <th>Supprimer</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                               {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.phone }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning" onclick="edit('{{ user.id }}','{{ user.username }}','{{ user.password }}','{{ user.phone }}','{{ user.email }}')" data-toggle="modal" data-target="#myModal">
+                                                Modifier
+                                            </button>
+                                        </td>
+                                        <td><a href="{{ path('app_user_delete', {'id': user.id}) }}" class="btn btn-danger">Supprimer</a></td>
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                            <tr>
+                                <td><strong>Nom - Prenom</strong></td>
+                                <td><strong>Nom d'utilisateur</strong></td>
+                                <td><strong>Téléphone</strong></td>
+                                <td><strong>Mail</strong></td>
+                                <td>Action</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="card shadow">
+                {{ form_start(form) }}
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 fw-bold">Ajouter un utilisateur</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            {{ form_row(form.username) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.password) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.phone) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_row(form.submit) }}
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+            </div>
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        {{ form_start(form_update) }}
+                        <div class="modal-header">
+                            <p class="text-primary m-0 fw-bold">Editer un utilisateur</p>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                {{ form_row(form_update.id) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(form_update.username) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(form_update.password) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(form_update.email) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(form_update.phone) }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            {{ form_row(form_update.submit) }}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                        {{ form_end(form_update) }}
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}
+{% block script %}
+    <script defer>
+        function edit(id, username, password, email, phone){
+            document.getElementById("user_update_id").value = id;
+            document.getElementById("user_update_username").value = username;
+            document.getElementById("user_update_password").value = password;
+            document.getElementById("user_update_email").value = email;
+            document.getElementById("user_update_phone").value = phone;
+
+        }
+    </script>
 {% endblock %}

@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Form\UserType;
+use App\Form\UserUpdateType;
 use App\Repository\BedroomRepository;
 use App\Repository\HotelRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
@@ -56,11 +60,36 @@ class AdminController extends AbstractController
         ]);
     }
     #[Route('/admin/user', name: 'app_admin_user')]
-    public function user(UserRepository $userRepository): Response
+    public function user(UserRepository $userRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
+        $user = new User();
+
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_admin_user');
+        }
+
+        $form_update = $this->createForm(UserUpdateType::class, $user);
+        $form_update->handleRequest($request);
+
+        if ($form_update->isSubmitted() && $form_update->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_admin_user');
+        }
+
         $users = $userRepository->findAll();
         return $this->render('admin/user.html.twig', [
+            'form' => $form->createView(),
+            'form_update' => $form_update->createView(),
             'users' => $users,
         ]);
+
     }
 }

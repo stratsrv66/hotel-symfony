@@ -27,6 +27,7 @@ class Bedroom
     #[ORM\OneToMany(mappedBy: 'bedroom_id', targetEntity: Reservation::class)]
     private Collection $reservations;
 
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -98,6 +99,33 @@ class Bedroom
             if ($reservation->getBedroomId() === $this) {
                 $reservation->setBedroomId(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Service>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->addServiceBedroom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            $service->removeServiceBedroom($this);
         }
 
         return $this;

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -71,19 +72,27 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/create', name: 'app_user_create')]
-    public function createUser(EntityManagerInterface $interface): JsonResponse
+    public function createUser(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
         // create a new user
         $user = new User();
 
-        // get the post infos of the request
-        $request = Request::createFromGlobals();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_user_list');
+        }
+
+        dd($user);
         // username, password, email, phone
-        $username = $request->request->get('username');
-        $password = $request->request->get('password');
-        $email = $request->request->get('email');
-        $phone = $request->request->get('phone');
+        $username = $request->get('username');
+        $password = $request->get('password');
+        $email = $request->get('email');
+        $phone = $request->get('phone');
 
         // set the user infos
         $user->setUsername($username);
@@ -91,13 +100,14 @@ class UserController extends AbstractController
         $user->setEmail($email);
         $user->setPhone($phone);
 
+        dd($user);
+
         // save the user in the database
-        $interface->persist($user);
-        $interface->flush();
+        $entityManager->persist($user);
+        $entityManager->flush();
 
         // return the user as json
         return $this->json($user);
-
     }
 
     #[Route('/user/update/{id}', name: 'app_user_update')]
