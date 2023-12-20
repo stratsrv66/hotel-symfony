@@ -33,6 +33,7 @@ class Bedroom
     #[ORM\OneToMany(mappedBy: 'equipment_bedroom', targetEntity: Equipment::class)]
     private Collection $equipment;
 
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
