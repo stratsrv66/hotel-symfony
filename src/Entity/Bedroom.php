@@ -27,9 +27,17 @@ class Bedroom
     #[ORM\OneToMany(mappedBy: 'bedroom_id', targetEntity: Reservation::class)]
     private Collection $reservations;
 
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'category_bedroom')]
+    private Collection $categories;
+
+    #[ORM\OneToMany(mappedBy: 'equipment_bedroom', targetEntity: Equipment::class)]
+    private Collection $equipment;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->equipment = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -97,6 +105,63 @@ class Bedroom
             // set the owning side to null (unless already changed)
             if ($reservation->getBedroomId() === $this) {
                 $reservation->setBedroomId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addCategoryBedroom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeCategoryBedroom($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipment>
+     */
+    public function getEquipment(): Collection
+    {
+        return $this->equipment;
+    }
+
+    public function addEquipment(Equipment $equipment): static
+    {
+        if (!$this->equipment->contains($equipment)) {
+            $this->equipment->add($equipment);
+            $equipment->setEquipmentBedroom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipment(Equipment $equipment): static
+    {
+        if ($this->equipment->removeElement($equipment)) {
+            // set the owning side to null (unless already changed)
+            if ($equipment->getEquipmentBedroom() === $this) {
+                $equipment->setEquipmentBedroom(null);
             }
         }
 
