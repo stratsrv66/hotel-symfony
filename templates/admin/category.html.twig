@@ -1,6 +1,6 @@
 {% extends 'admin/panel.html.twig' %}
 
-{% block title %}Panel d'administration - Hôtels{% endblock %}
+{% block title %}Panel d'administration - Catégories{% endblock %}
 
 {% block body %}
     <div id="content">
@@ -12,10 +12,10 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <h3 class="text-dark mb-4">Hôtels</h3>
+            <h3 class="text-dark mb-4">Catégories</h3>
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <p class="text-primary m-0 fw-bold">Liste des hôtels</p>
+                    <p class="text-primary m-0 fw-bold">Liste des catégories</p>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
@@ -23,36 +23,33 @@
                             <thead>
                             <tr>
                                 <td><strong>Id</strong></td>
-                                <td><strong>Nom</strong></td>
-                                <td><strong>Addresse</strong></td>
-                                <td><strong>Ville</strong></td>
-                                <td><strong>Editer</strong></td>
-                                <td><strong>Supprimmer</strong></td>
+                                <td><strong>Label</strong></td>
+                                <td><strong>Description</strong></td>
+                                <td><strong>Modifier</strong></td>
+                                <td><strong>Supprimer</strong></td>
                             </tr>
                             </thead>
                             <tbody>
-                               {% for hotel in hotels %}
+                               {% for category in categories %}
                                     <tr>
-                                        <td>{{ hotel.id }}</td>
-                                        <td>{{ hotel.name }}</td>
-                                        <td>{{ hotel.address }}</td>
-                                        <td>{{ hotel.city.label }}</td>
+                                        <td>{{ category.id }}</td>
+                                        <td>{{ category.label }}</td>
+                                        <td>{{ category.description }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-warning" onclick="edit({{ hotel.id }}, '{{ hotel.name }}', '{{ hotel.address }}')" data-toggle="modal" data-target="#myModal">
+                                            <button type="button" class="btn btn-warning" onclick="edit()" data-toggle="modal" data-target="#myModal">
                                                 Modifier
                                             </button>
                                         </td>
-                                        <td><a href="{{ path('app_hotel_delete', {'id': hotel.id}) }}" class="btn btn-danger">Supprimer</a></td>
+                                        <td><a href="{{ path('app_category_delete', {'id': category.id}) }}" class="btn btn-danger">Supprimer</a></td>
                                     </tr>
                                 {% endfor %}
                             <tfoot>
                             <tr>
                                 <td><strong>Id</strong></td>
-                                <td><strong>Nom</strong></td>
-                                <td><strong>Addresse</strong></td>
-                                <td><strong>Ville</strong></td>
-                                <td><strong>Editer</strong></td>
-                                <td><strong>Supprimmer</strong></td>
+                                <td><strong>Label</strong></td>
+                                <td><strong>Description</strong></td>
+                                <td><strong>Modifier</strong></td>
+                                <td><strong>Supprimer</strong></td>
                             </tr>
                             </tfoot>
                         </table>
@@ -62,23 +59,15 @@
             <div class="card shadow">
                 {{ form_start(form) }}
                     <div class="card-header py-3">
-                        <p class="text-primary m-0 fw-bold">Ajouter un hôtel</p>
+                        <p class="text-primary m-0 fw-bold">Ajouter une catégorie</p>
                     </div>
                     <div class="card-body">
                         <div class="form-group">
-                            {{ form_row(form.name) }}
+                            {{ form_row(form.label) }}
                         </div>
                         <div class="form-group">
-                            {{ form_row(form.address) }}
+                            {{ form_row(form.description) }}
                         </div>
-                        <div class="form-group">
-                                <label for="hotel_update_city">Ville</label>
-                                <select class="form-control" id="hotel_update_city" name="hotel_update[city]">
-                                    {% for city in cities %}
-                                        <option value="{{ city.id }}">{{ city.label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
                         <div class="form-group">
                             {{ form_row(form.submit) }}
                         </div>
@@ -105,14 +94,6 @@
                             <div class="form-group">
                                 <label for="hotel_update_address">Addresse</label>
                                 <input type="text" class="form-control" id="hotel_update_address" name="hotel_update[address]">
-                            </div>
-                            <div class="form-group">
-                                <label for="hotel_update_city">Ville</label>
-                                <select class="form-control" id="hotel_update_city" name="hotel_update[city]">
-                                    {% for city in cities %}
-                                        <option value="{{ city.id }}">{{ city.label }}</option>
-                                    {% endfor %}
-                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">

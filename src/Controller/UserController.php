@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
@@ -72,7 +72,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/create', name: 'app_user_create')]
-    public function createUser(EntityManagerInterface $entityManager, Request $request): JsonResponse
+    public function createUser(EntityManagerInterface $entityManager, Request $request): Response
     {
         // create a new user
         $user = new User();
@@ -87,7 +87,6 @@ class UserController extends AbstractController
             return $this->redirectToRoute('app_user_list');
         }
 
-        dd($user);
         // username, password, email, phone
         $username = $request->get('username');
         $password = $request->get('password');
@@ -111,39 +110,39 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/update/{id}', name: 'app_user_update')]
-    public function updateUser(User $user, Request $request, EntityManagerInterface $interface): JsonResponse
+    public function updateUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, int $id): Response
     {
+        $user = $userRepository->find($id);
 
-        // if the user does not exist return a 404
+        // If the user does not exist, return a 404
         if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$request->get('id')
-            );
+            throw $this->createNotFoundException('No user found for id ' . $id);
         }
 
-        // username, password, email, phone
-        $username = $request->get('username');
-        $password = $request->get('password');
-        $email = $request->get('email');
-        $phone = $request->get('phone');
+        $userData = $request->request->all()['user_update'];
+        // Get other parameters from the request
+        $username = $userData['username'];
+        $password = $userData['password'];
+        $email = $userData['email'];
+        $phone = $userData['phone'];
 
-        // set the user infos
+        // Set the user info
         $user->setUsername($username);
         $user->setPassword($password);
         $user->setEmail($email);
         $user->setPhone($phone);
 
-        // save the user in the database
-        $interface->persist($user);
-        $interface->flush();
+        // Save the user in the database
+        $entityManager->persist($user);
+        $entityManager->flush();
 
-        // return the user as json
-        return $this->json($user);
-
+        // redirect to the user list
+        return $this->redirectToRoute('app_admin_user');
     }
 
+
     #[Route('/user/delete/{id}', name: 'app_user_delete')]
-    public function deleteUser(User $user, Request $request, EntityManagerInterface $interface): JsonResponse
+    public function deleteUser(User $user, Request $request, EntityManagerInterface $interface): Response
     {
 
         // if the user does not exist return a 404
@@ -157,8 +156,8 @@ class UserController extends AbstractController
         $interface->remove($user);
         $interface->flush();
 
-        // return the user as json
-        return $this->json($user);
+        // return pass app_user_list;
+        return $this->redirectToRoute('app_admin_user');
 
     }
 

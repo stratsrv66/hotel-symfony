@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ReservationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -69,6 +70,26 @@ class ReservationController extends AbstractController
 
         // return the reservation as json
         return $this->json($reservation);
+    }
+
+    // delete
+    #[Route('/reservation/delete/{id}', name: 'app_reservation_delete')]
+    public function deleteReservation(Reservation $reservation, Request $request, EntityManagerInterface $entityManager): Response
+    {
+
+        // if the reservation does not exist return a 404
+        if (!$reservation) {
+            throw $this->createNotFoundException(
+                'No reservation found for id ' . $request->get('id')
+            );
+        }
+
+        // delete the reservation
+        $entityManager->remove($reservation);
+        $entityManager->flush();
+
+        // return the reservation as json
+        return $this->redirectToRoute('app_admin_reservation');
 
     }
 

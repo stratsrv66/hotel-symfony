@@ -13,7 +13,7 @@ class User
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -39,6 +39,13 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getUsername(): ?string
