@@ -36,7 +36,7 @@
                                         <td>{{ hotel.id }}</td>
                                         <td>{{ hotel.name }}</td>
                                         <td>{{ hotel.address }}</td>
-                                        <td>{{ hotel.city.label }}</td>
+                                        <td>{{ hotel.city.label|default('') }}</td>
                                         <td>
                                             <button type="button" class="btn btn-warning" onclick="edit({{ hotel.id }}, '{{ hotel.name }}', '{{ hotel.address }}')" data-toggle="modal" data-target="#myModal">
                                                 Modifier
