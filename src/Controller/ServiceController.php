@@ -14,7 +14,7 @@ class ServiceController extends AbstractController
     #[Route('/service', name: 'app_service')]
     public function index(): Response
     {
-        return $this->render('service/index.html.twig', [
+        return $this->render('service/index.html.twig.twig', [
             'controller_name' => 'ServiceController',
         ]);
     }

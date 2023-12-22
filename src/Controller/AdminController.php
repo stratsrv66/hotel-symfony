@@ -46,7 +46,6 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // app_admin_hotel, app_admin_reservation, app_admin_bedroom, app_admin_user
     #[Route('/admin/hotel', name: 'app_admin_hotel')]
     public function hotel(HotelRepository $hotelRepository, CityRepository $cityRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
@@ -105,7 +104,7 @@ class AdminController extends AbstractController
         ]);
     }
     #[Route('/admin/bedroom', name: 'app_admin_bedroom')]
-    public function bedroom(BedroomRepository $bedroomRepository, EntityManagerInterface $entityManager, Request $request): Response
+    public function bedroom(BedroomRepository $bedroomRepository, EntityManagerInterface $entityManager, Request $request, CategoryRepository $categoryRepository): Response
     {
 
         $bedroom = new Bedroom();
@@ -119,10 +118,12 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_bedroom');
         }
 
+        $categories = $categoryRepository->findAll();
         $bedrooms = $bedroomRepository->findAll();
         return $this->render('admin/bedroom.html.twig', [
             'bedrooms' => $bedrooms,
             'form' => $form->createView(),
+            'categories' => $categories,
         ]);
     }
     #[Route('/admin/user', name: 'app_admin_user')]

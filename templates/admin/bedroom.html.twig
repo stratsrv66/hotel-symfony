@@ -38,7 +38,12 @@
                                         <td>{{ bedroom.number }}</td>
                                         <td>{{ bedroom.type }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-warning" onclick="edit()" data-toggle="modal" data-target="#myModal">
+                                            <button type="button" class="btn btn-warning" onclick="edit(
+                                                '{{ bedroom.id }}',
+                                                '{{ bedroom.hotelId.id }}',
+                                                '{{ bedroom.number }}',
+                                                '{{ bedroom.type }}'
+                                            )" data-toggle="modal" data-target="#myModal">
                                                 Modifier
                                             </button>
                                         </td>
@@ -96,7 +101,26 @@
                         <label for="bedroom_update_id">Id</label>
                         <input type="text" class="form-control" id="bedroom_update_id" name="bedroom_update[id]" readonly>
                     </div>
-                    <!-- Adjust other fields accordingly -->
+                    <div class="form-group">
+                        <label for="bedroom_update_type">Type</label>
+                        <input type="text" class="form-control" id="bedroom_update_type" name="bedroom_update[type]">
+                    </div>
+                    <div class="form-group">
+                        <label for="bedroom_update_number">Numéro de chambre</label>
+                        <input type="text" class="form-control" id="bedroom_update_number" name="bedroom_update[number]">
+                    </div>
+                    <div class="form-group">
+                        <label for="bedroom_update_hotel_id">Id de l'hotel</label>
+                        <input type="text" class="form-control" id="bedroom_update_hotel_id" name="bedroom_update[hotel_id]">
+                    </div>
+                    <div class="form-group">
+                        <label for="bedroom_update_categories">Catégories</label>
+                        <select class="form-control" id="bedroom_update_categories" name="bedroom_update[categories]">
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Editer</button>
@@ -116,7 +140,9 @@
         url = url.replace('__id__', id);
         document.getElementById("form_update").action = url;
         document.getElementById("bedroom_update_id").value = id;
-        // Adjust other fields accordingly
+        document.getElementById("bedroom_update_hotel_id").value = hotelId;
+        document.getElementById("bedroom_update_number").value = number;
+        document.getElementById("bedroom_update_type").value = type;
     }
 </script>
 
