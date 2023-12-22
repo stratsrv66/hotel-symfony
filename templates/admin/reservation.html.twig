@@ -1,6 +1,6 @@
 {% extends 'admin/panel.html.twig' %}
 
-{% block title %}Panel d'administration - Réservations{% endblock %}
+{% block title %}Panel d'administration - Hôtels{% endblock %}
 
 {% block body %}
     <div id="content">
@@ -12,9 +12,118 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                <h3 class="text-dark mb-0">Réservations</h3>
+            <h3 class="text-dark mb-4">Reservations</h3>
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Liste des reservations</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                        <table class="table my-0" id="dataTable">
+                            <thead>
+                            <tr>
+                                <td><strong>Id</strong></td>
+                                <td><strong>Date de début</strong></td>
+                                <td><strong>Date de fin</strong></td>
+                                <td><strong>Id de la chambre</strong></td>
+                                <td><strong>Modifier</strong></td>
+                                <td><strong>Supprimer</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                               {% for reservation in reservations %}
+                                    <tr>
+                                        <td>{{ reservation.id }}</td>
+                                        <td>{{ reservation.startDate | date('d:m:Y') }}</td>
+                                        <td>{{ reservation.endDate | date('d:m:Y') }}</td>
+                                        <td>{{ reservation.bedroomId.hotelId.name }} - {{ reservation.bedroomId.number }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning" onclick="edit({{ reservation.id }}, {{ reservation.startDate | date('d:m:Y') }}, {{ reservation.endDate| date('d:m:Y') }})" data-toggle="modal" data-target="#myModal">
+                                                Modifier
+                                            </button>
+                                        </td>
+                                        <td><a href="{{ path('app_reservation_delete', {'id': reservation.id}) }}" class="btn btn-danger">Supprimer</a></td>
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                            <tr>
+                                <td><strong>Id</strong></td>
+                                <td><strong>Date de début</strong></td>
+                                <td><strong>Date de fin</strong></td>
+                                <td><strong>Id de la chambre</strong></td>
+                                <td><strong>Modifier</strong></td>
+                                <td><strong>Supprimer</strong></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="card shadow">
+                {{ form_start(form) }}
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 fw-bold">Ajouter un hôtel</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            {{ form_row(form.start_date) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.end_date) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.bedroom_id) }}
+                        </div>
+                         <div class="form-group">
+                            {{ form_row(form.user_id) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.submit) }}
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+            </div>
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" id="form_update">
+                        <div class="modal-header">
+                            <p class="text-primary m-0 fw-bold">Editer un utilisateur</p>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="hotel_update_id">Id</label>
+                                <input type="text" class="form-control" id="hotel_update_id" name="hotel_update[id]" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel_update_name">Nom</label>
+                                <input type="text" class="form-control" id="hotel_update_name" name="hotel_update[name]">
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel_update_address">Addresse</label>
+                                <input type="text" class="form-control" id="hotel_update_address" name="hotel_update[address]">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Editer</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}
+{% block script %}
+    <script defer>
+        function edit(id, name, address){
+            let url = '{{ path('app_hotel_update', {'id': '__id__'}) }}';
+            url = url.replace('__id__', id);
+            document.getElementById("form_update").action = url;
+            document.getElementById("hotel_update_id").value = id;
+            document.getElementById("hotel_update_name").value = name;
+            document.getElementById("hotel_update_address").value = address;
+        }
+    </script>
 {% endblock %}

@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Reservation;
 use App\Form\UserType;
+use App\Repository\ReservationRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
@@ -71,8 +75,8 @@ class UserController extends AbstractController
 
     }
 
-    #[Route('/user/create', name: 'app_user_create')]
-    public function createUser(EntityManagerInterface $entityManager, Request $request): JsonResponse
+    #[NoReturn] #[Route('/user/create', name: 'app_user_create')]
+    public function createUser(EntityManagerInterface $entityManager, Request $request): Response
     {
         // create a new user
         $user = new User();
@@ -87,7 +91,6 @@ class UserController extends AbstractController
             return $this->redirectToRoute('app_user_list');
         }
 
-        dd($user);
         // username, password, email, phone
         $username = $request->get('username');
         $password = $request->get('password');
@@ -100,32 +103,27 @@ class UserController extends AbstractController
         $user->setEmail($email);
         $user->setPhone($phone);
 
-        dd($user);
 
         // save the user in the database
         $entityManager->persist($user);
         $entityManager->flush();
 
-        // return the user as json
-        return $this->json($user);
+        return $this->redirectToRoute('app_user_side');
     }
 
-    #[Route('/user/update/{id}', name: 'app_user_update')]
-    public function updateUser(User $user, Request $request, EntityManagerInterface $interface): JsonResponse
+    // create user no form
+    #[Route('/user/create/noform', name: 'app_user_create_noform', methods: ['POST'])]
+    public function createUserNoForm(EntityManagerInterface $entityManager, Request $request): Response
     {
 
-        // if the user does not exist return a 404
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$request->get('id')
-            );
-        }
+        // create a new user
+        $user = new User();
 
         // username, password, email, phone
-        $username = $request->get('username');
-        $password = $request->get('password');
-        $email = $request->get('email');
-        $phone = $request->get('phone');
+        $username = $request->request->get('username');
+        $password = $request->request->get('password');
+        $email = $request->request->get('email');
+        $phone = $request->request->get('phone');
 
         // set the user infos
         $user->setUsername($username);
@@ -134,16 +132,50 @@ class UserController extends AbstractController
         $user->setPhone($phone);
 
         // save the user in the database
-        $interface->persist($user);
-        $interface->flush();
+        $entityManager->persist($user);
+        $entityManager->flush();
 
-        // return the user as json
-        return $this->json($user);
+        return $this->redirectToRoute('app_user_side', [
+            'message' => 'User created successfully'
+        ]);
 
     }
 
+
+    #[Route('/user/update/{id}', name: 'app_user_update')]
+    public function updateUser(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, int $id): Response
+    {
+        $user = $userRepository->find($id);
+
+        // If the user does not exist, return a 404
+        if (!$user) {
+            throw $this->createNotFoundException('No user found for id ' . $id);
+        }
+
+        $userData = $request->request->all()['user_update'];
+        // Get other parameters from the request
+        $username = $userData['username'];
+        $password = $userData['password'];
+        $email = $userData['email'];
+        $phone = $userData['phone'];
+
+        // Set the user info
+        $user->setUsername($username);
+        $user->setPassword($password);
+        $user->setEmail($email);
+        $user->setPhone($phone);
+
+        // Save the user in the database
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        // redirect to the user list
+        return $this->redirectToRoute('app_admin_user');
+    }
+
+
     #[Route('/user/delete/{id}', name: 'app_user_delete')]
-    public function deleteUser(User $user, Request $request, EntityManagerInterface $interface): JsonResponse
+    public function deleteUser(User $user, Request $request, EntityManagerInterface $interface): Response
     {
 
         // if the user does not exist return a 404
@@ -157,20 +189,19 @@ class UserController extends AbstractController
         $interface->remove($user);
         $interface->flush();
 
-        // return the user as json
-        return $this->json($user);
+        // return pass app_user_list;
+        return $this->redirectToRoute('app_admin_user');
 
     }
 
-    #[Route('/user/login', name: 'app_user_login')]
-    public function loginUser(Request $request, UserRepository $userRepository): JsonResponse
+    // login
+    #[Route('/login', name: 'app_user_login')]
+    public function login(Request $request, UserRepository $userRepository, Session $session): Response
     {
-        // get the post infos of the request
-        $request = Request::createFromGlobals();
 
         // username, password
-        $username = $request->get('username');
-        $password = $request->get('password');
+        $username = $request->request->get('loginUsername');
+        $password = $request->request->get('loginPassword');
 
         // get the user that got the username $username
         $user = $userRepository->findBy(
@@ -179,41 +210,44 @@ class UserController extends AbstractController
 
         // if the user does not exist return a 404
         if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for username '.$username
-            );
+            // display an error message
+            return $this->redirectToRoute('app_user_side', [
+                'error' => 'User not found or password incorrect'
+            ]);
         }
 
-        // if the password is not correct return a 404
-        if ($user->getPassword() != $password) {
-            throw $this->createNotFoundException(
-                'Wrong password for username '.$username
-            );
-        }
+        // open session
+        $session->start();
+        $session->set('user_id', $user[0]->getId());
 
-        // return the user as json
-        return $this->json($user);
-
+        // redirect to the user list
+        return $this->redirectToRoute('app_user_side', [
+            'message' => 'User logged in successfully'
+        ]);
     }
 
-    #[Route('/user/logout', name: 'app_user_logout')]
-    public function logoutUser(Request $request, UserRepository $userRepository): JsonResponse
+    // logout
+    #[Route('/logout', name: 'app_user_logout')]
+    public function logout(Request $request): Response
     {
-        // username
-        $username = $request->get('username');
+        $session = $request->getSession();
+        $session->remove('user_id');
 
-        // get the user that got the username $username
-        $user = $userRepository->find($username);
+        // redirect to the user list
+        return $this->redirectToRoute('app_user_side');
+    }
 
-        // if the user does not exist return a 404
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for username '.$username
-            );
-        }
+    // create reservation
+    #[Route('/reservation/createee', name: 'app_reservation_createee', methods: ['POST'])]
+    public function createReservation(): Response
+    {
 
-        // return the user as json
-        return $this->json($user);
+        // redirect to the user list
+        return $this->redirectToRoute('app_user_side', [
+            'message' => 'Reservation created successfully'
+        ]);
 
     }
+
+
 }

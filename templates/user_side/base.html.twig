@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+    <title>keto</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <!-- style css -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <!-- Responsive-->
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+    <!-- fevicon -->
+    <link rel="icon" href="{{ asset('images/fevicon.png') }}" type="image/gif" />
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/jquery.mCustomScrollbar.min.css') }}">
+    <!-- Tweaks for older IEs-->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+</head>
+<!-- body -->
+<body class="main-layout">
+<!-- loader  -->
+<div class="loader_bg">
+    <div class="loader"><img src="{{ asset('images/loading.gif') }}" alt="#"/></div>
+</div>
+<!-- end loader -->
+<!-- header -->
+<header>
+    {% if app.request.get('error') != null %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ app.request.get('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% if app.request.get('message') != null %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ app.request.get('message') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    <!-- header inner -->
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                    <div class="full">
+                        <div class="center-desk">
+                            <div class="logo">
+                                <a href="{{ path('app_user_side') }}"><img src="{{ asset('images/logo.png') }}" alt="#" /></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                    <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarsExample04">
+                            <ul class="navbar-nav mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_user_side') }}">Accueil</a>
+                                </li>
+                                <li class="nav-item">
+                                    <!-- Menu déroulant -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                                            Mon compte
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            {% if app.session.get('user_id') == null %}
+                                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#loginModal">Connexion</a>
+                                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#registerModal">Inscription</a>
+                                            {% else %}
+                                            <a class="dropdown-item" href="{{ path('app_user_logout') }}">Déconnexion</a>
+                                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#reservationsModals">Mes réservations</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- end header inner -->
+<!-- end header -->
+<!-- banner -->
+{% block main %}{% endblock %}
+<!-- end contact -->
+<!--  footer -->
+<footer>
+    <div class="footer">
+        <div class="copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-10 offset-md-1">
+                        <p>
+                            © 2023 - M2I</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Register</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Registration Form -->
+                <form id="registerForm" action="{{ path('app_user_create_noform') }}" method="POST">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="loginForm" action="{{ path('app_user_login') }}" method="post">
+                    <div class="form-group">
+                        <label for="loginUsername">Username:</label>
+                        <input type="text" class="form-control" id="loginUsername" name="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" class="form-control" id="loginPassword" name="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="reservationsModals">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Hotel List</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- List of hotels -->
+                <ul class="list-group">
+                    <!-- Replace the values with your actual data -->
+                    {% for reservation in reservations %}
+                    <li class="list-group-item" data-id="1" data-name="Hotel 1" data-rooms="10">
+                        <h5>{{ reservation.getBedroomId().getHotelId().getName() }} - {{ reservation.getBedroomId().getNumber() }}</h5>
+                        <button type="button" class="btn btn-danger btn-sm float-right" onclick="">Supprimer</button>
+                    </li>
+                    {% endfor %}
+                    <!-- Add more list items as needed -->
+                </ul>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- end footer -->
+<!-- Javascript files-->
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/jquery-3.0.0.min.js') }}"></script>
+<!-- sidebar -->
+<script src="{{ asset('js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
+<script src="{{ asset('js/custom.js') }}"></script>
+<!-- javascript -->
+{% block javascripts %}{% endblock %}
+</body>
+</html>

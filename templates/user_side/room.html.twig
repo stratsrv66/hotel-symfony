@@ -1,0 +1,101 @@
+{% extends 'user_side/base.html.twig' %}
+{% block main %}
+      <!-- end header inner -->
+      <!-- end header -->
+      <div class="back_re">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="title">
+                     <h2>Nos Chambres</h2>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- our_room -->
+      <div  class="our_room">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="titlepage">
+                     <p  class="margin_0">Voici nos chambres disponnibles</p>
+                      {%  if startDate|default()  %}
+                            <p  class="margin_0">Du {{ startDate|date('d/m/Y') }} au {{ endDate|date('d/m/Y') }}</p>
+                        {% endif %}
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               {% for bedroom in bedrooms %}
+                <div class="col-md-4 col-sm-6" onclick="createReservation({{ bedroom.id }}, '{{ startDate|date('Y-m-d') }}', '{{ endDate|date('Y-m-d') }}')" data-toggle="modal" data-target="#reservationModal">
+                    <div id="serv_hover"  class="room">
+                        <div class="room_img">
+                            <figure><img src="images/room{{ random(1, 5) }}.jpg" alt="#"/></figure>
+                        </div>
+                        <div class="bed_room">
+                            <h3>{{ bedroom.hotelId.name }} - {{ bedroom.number }}</h3>
+                            <p>
+                                {%  for categeory in bedroom.categories %}
+                                    {{ categeory.label }} -
+                                {% endfor %}
+                                {{ bedroom.type }}
+                            </p>
+                        </div>
+                    </div>
+                  </div>
+               {% endfor %}
+            </div>
+         </div>
+      </div>
+      <!-- end our_room -->
+    <div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">Make Reservation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Reservation Form -->
+                    <form id="reservationForm" method="POST" action="{{ path('app_reservation_create') }}">
+                        <div class="form-group">
+                            <label for="bedroom_id">Bedroom ID:</label>
+                            <input type="text" class="form-control" id="bedroom_id" name="bedroom_id" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Make Reservation</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    function createReservation(bedroomId, startDate, endDate) {
+        // Convert date strings to JavaScript Date objects
+        var formattedStartDate = new Date(startDate);
+        var formattedEndDate = new Date(endDate);
+
+        // Format the date to yyyy-mm-dd, which is the format accepted by the input type="date"
+        var isoStartDate = formattedStartDate.toISOString().split('T')[0];
+        var isoEndDate = formattedEndDate.toISOString().split('T')[0];
+
+        // Set the values in the modal
+        $('#bedroom_id').val(bedroomId);
+        $('#startDate').val(isoStartDate);
+        $('#endDate').val(isoEndDate);
+    }
+</script>
+
+{% endblock %}

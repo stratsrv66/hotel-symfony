@@ -24,6 +24,9 @@ class Hotel
     #[ORM\OneToMany(mappedBy: 'hotel_id', targetEntity: Bedroom::class)]
     private Collection $bedrooms;
 
+    #[ORM\ManyToOne(inversedBy: 'hotels')]
+    private ?City $city = null;
+
     public function __construct()
     {
         $this->bedrooms = new ArrayCollection();
@@ -84,6 +87,18 @@ class Hotel
                 $bedroom->setHotelId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function setCity(?City $city): static
+    {
+        $this->city = $city;
 
         return $this;
     }

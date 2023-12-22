@@ -38,7 +38,7 @@
                                         <td>{{ user.phone }}</td>
                                         <td>{{ user.email }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-warning" onclick="edit('{{ user.id }}','{{ user.username }}','{{ user.password }}','{{ user.phone }}','{{ user.email }}')" data-toggle="modal" data-target="#myModal">
+                                            <button type="button" class="btn btn-warning" onclick="edit('{{ user.id }}', '{{ user.username }}', '{{ user.password }}', '{{ user.phone }}', '{{ user.email }}')" data-toggle="modal" data-target="#myModal">
                                                 Modifier
                                             </button>
                                         </td>
@@ -51,7 +51,8 @@
                                 <td><strong>Nom d'utilisateur</strong></td>
                                 <td><strong>Téléphone</strong></td>
                                 <td><strong>Mail</strong></td>
-                                <td>Action</td>
+                                <td><strong>Editer</strong></td>
+                                <td><strong>Supprimmer</strong></td>
                             </tr>
                             </tfoot>
                         </table>
@@ -86,47 +87,54 @@
             <div class="modal" id="myModal">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        {{ form_start(form_update) }}
+                       <form method="post" id="form_update">
                         <div class="modal-header">
                             <p class="text-primary m-0 fw-bold">Editer un utilisateur</p>
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                {{ form_row(form_update.id) }}
+                                <label for="user_update_id">Id</label>
+                                <input type="text" class="form-control" id="user_update_id" name="user_update[id]" readonly>
                             </div>
                             <div class="form-group">
-                                {{ form_row(form_update.username) }}
+                                <label for="user_update_username">Nom d'utilisateur</label>
+                                <input type="text" class="form-control" id="user_update_username" name="user_update[username]">
                             </div>
                             <div class="form-group">
-                                {{ form_row(form_update.password) }}
+                                <label for="user_update_password">Mot de passe</label>
+                                <input type="password" class="form-control" id="user_update_password" name="user_update[password]">
                             </div>
                             <div class="form-group">
-                                {{ form_row(form_update.email) }}
+                                <label for="user_update_email">Email</label>
+                                <input type="email" class="form-control" id="user_update_email" name="user_update[email]">
                             </div>
                             <div class="form-group">
-                                {{ form_row(form_update.phone) }}
+                                <label for="user_update_phone">Téléphone</label>
+                                <input type="text" class="form-control" id="user_update_phone" name="user_update[phone]">
                             </div>
                         </div>
                         <div class="modal-footer">
-                            {{ form_row(form_update.submit) }}
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Editer</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
                         </div>
-                        {{ form_end(form_update) }}
+                        </form>
                     </div>
                 </div>
             </div>
 
 {% endblock %}
 {% block script %}
-    <script defer>
-        function edit(id, username, password, email, phone){
-            document.getElementById("user_update_id").value = id;
-            document.getElementById("user_update_username").value = username;
-            document.getElementById("user_update_password").value = password;
-            document.getElementById("user_update_email").value = email;
-            document.getElementById("user_update_phone").value = phone;
-
-        }
-    </script>
+   <script defer>
+    function edit(id, username, password, phone, email){
+        var url = '{{ path('app_user_update', {'id': '__id__'}) }}';
+        url = url.replace('__id__', id);
+        document.getElementById("form_update").setAttribute("action", url);
+        document.getElementById("user_update_id").value = id;
+        document.getElementById("user_update_username").value = username;
+        document.getElementById("user_update_password").value = password;
+        document.getElementById("user_update_email").value = email;
+        document.getElementById("user_update_phone").value = phone;
+    }
+</script>
 {% endblock %}

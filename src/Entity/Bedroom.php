@@ -69,6 +69,12 @@ class Bedroom
 
         return $this;
     }
+    public function setTypeInt(int $type): static
+    {
+        $this->type = strval($type);
+
+        return $this;
+    }
 
     public function getHotelId(): ?Hotel
     {
@@ -118,6 +124,11 @@ class Bedroom
     public function getCategories(): Collection
     {
         return $this->categories;
+    }
+
+    public function containsCategory(Category $category): bool
+    {
+        return $this->categories->contains($category);
     }
 
     public function addCategory(Category $category): static

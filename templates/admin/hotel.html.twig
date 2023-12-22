@@ -12,9 +12,128 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                <h3 class="text-dark mb-0">Hôtels</h3>
+            <h3 class="text-dark mb-4">Hôtels</h3>
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold">Liste des hôtels</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                        <table class="table my-0" id="dataTable">
+                            <thead>
+                            <tr>
+                                <td><strong>Id</strong></td>
+                                <td><strong>Nom</strong></td>
+                                <td><strong>Addresse</strong></td>
+                                <td><strong>Ville</strong></td>
+                                <td><strong>Editer</strong></td>
+                                <td><strong>Supprimmer</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                               {% for hotel in hotels %}
+                                    <tr>
+                                        <td>{{ hotel.id }}</td>
+                                        <td>{{ hotel.name }}</td>
+                                        <td>{{ hotel.address }}</td>
+                                        <td>{{ hotel.city.label }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning" onclick="edit({{ hotel.id }}, '{{ hotel.name }}', '{{ hotel.address }}')" data-toggle="modal" data-target="#myModal">
+                                                Modifier
+                                            </button>
+                                        </td>
+                                        <td><a href="{{ path('app_hotel_delete', {'id': hotel.id}) }}" class="btn btn-danger">Supprimer</a></td>
+                                    </tr>
+                                {% endfor %}
+                            <tfoot>
+                            <tr>
+                                <td><strong>Id</strong></td>
+                                <td><strong>Nom</strong></td>
+                                <td><strong>Addresse</strong></td>
+                                <td><strong>Ville</strong></td>
+                                <td><strong>Editer</strong></td>
+                                <td><strong>Supprimmer</strong></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="card shadow">
+                {{ form_start(form) }}
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 fw-bold">Ajouter un hôtel</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            {{ form_row(form.name) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_row(form.address) }}
+                        </div>
+                        <div class="form-group">
+                                <label for="hotel_update_city">Ville</label>
+                                <select class="form-control" id="hotel_update_city" name="hotel_update[city]">
+                                    {% for city in cities %}
+                                        <option value="{{ city.id }}">{{ city.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        <div class="form-group">
+                            {{ form_row(form.submit) }}
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+            </div>
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" id="form_update">
+                        <div class="modal-header">
+                            <p class="text-primary m-0 fw-bold">Editer un utilisateur</p>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="hotel_update_id">Id</label>
+                                <input type="text" class="form-control" id="hotel_update_id" name="hotel_update[id]" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel_update_name">Nom</label>
+                                <input type="text" class="form-control" id="hotel_update_name" name="hotel_update[name]">
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel_update_address">Addresse</label>
+                                <input type="text" class="form-control" id="hotel_update_address" name="hotel_update[address]">
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel_update_city">Ville</label>
+                                <select class="form-control" id="hotel_update_city" name="hotel_update[city]">
+                                    {% for city in cities %}
+                                        <option value="{{ city.id }}">{{ city.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Editer</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}
+{% block script %}
+    <script defer>
+        function edit(id, name, address){
+            let url = '{{ path('app_hotel_update', {'id': '__id__'}) }}';
+            url = url.replace('__id__', id);
+            document.getElementById("form_update").action = url;
+            document.getElementById("hotel_update_id").value = id;
+            document.getElementById("hotel_update_name").value = name;
+            document.getElementById("hotel_update_address").value = address;
+        }
+    </script>
 {% endblock %}
